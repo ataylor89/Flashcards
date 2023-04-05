@@ -34,9 +34,4 @@ public class Card implements Serializable {
     public String getBack() {
         return back;
     }
-        
-    @Override
-    public String toString() {
-        return String.format("Front: %s\nBack: %s\n", front, back);
-    }
 }
