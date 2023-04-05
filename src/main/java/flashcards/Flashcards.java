@@ -124,11 +124,10 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
         contentPane.add(controls);
         setContentPane(contentPane);
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
-        updateView(true);
+        updateView();
     }
     
-    private void updateView(boolean faceUp) {
-        this.faceUp = faceUp;
+    private void updateView() {
         position.setText(deck.position() + 1 + " of " + deck.size() + (faceUp ? " (front) " : " (back) "));
         Card card = deck.current();
         flashcard.setText(faceUp ? card.getFront() : card.getBack());
@@ -137,7 +136,7 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
     public void open(File file) {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
             this.deck = (Deck) in.readObject();
-            updateView(true);
+            updateView();
         } catch (IOException | ClassNotFoundException e) {
             System.err.println(e);
         }
@@ -169,39 +168,42 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == next) {
             deck.next();
-            updateView(true);
+            faceUp = true;
+            updateView();
         }
         else if (e.getSource() == back) {
             deck.previous();
-            updateView(true);
+            faceUp = true;
+            updateView();
         }
         else if (e.getSource() == flip) {
-            updateView(!faceUp);
+            faceUp = !faceUp;
+            updateView();
         }
         else if (e.getSource() == up) {
             deck.swap(deck.position(), deck.position() + 1);
             deck.next();
-            updateView(true);
+            updateView();
         }
         else if (e.getSource() == down) {
             deck.swap(deck.position(), deck.position() - 1);
             deck.previous();
-            updateView(true);
+            updateView();
         }
         else if (e.getSource() == create) {
             deck.add(new Card());
             deck.last();
-            updateView(true);
+            updateView();
         }
         else if (e.getSource() == delete) {
             deck.remove();
-            updateView(true);
+            updateView();
         }
         else if (e.getSource() == newDeck) {
             this.deck = new Deck();
             this.deck.add(new Card());
             this.file = null;
-            updateView(true);
+            updateView();
         }
         else if (e.getSource() == openDeck) {
             open();
