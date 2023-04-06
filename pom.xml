@@ -79,6 +79,8 @@
                         </execution>
                     </executions>
                     <configuration>
+                        <finalName>Flashcards</finalName>
+                        <appendAssemblyId>false</appendAssemblyId>
                         <archive>
                             <manifest>
                                 <mainClass>flashcards.Flashcards</mainClass>
