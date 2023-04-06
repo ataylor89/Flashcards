@@ -4,6 +4,10 @@
 
 The project can be built with the command
 
+    mvn clean install assembly:single
+
+Or, alternatively,
+
     mvn clean compile assembly:single
 
 ## Running
