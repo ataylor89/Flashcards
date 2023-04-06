@@ -62,6 +62,14 @@ public class Deck {
         return cards.size();
     }
     
+    public boolean isFirst() {
+        return position == 0;
+    }
+    
+    public boolean isLast() {
+        return position == cards.size() - 1;
+    }
+    
     public void swap(int i, int j) {
         int start = 0, end = cards.size() - 1;
         if (i >= start && i <= end && j >= start && j <= end && i != j) {
@@ -74,13 +82,5 @@ public class Deck {
     
     public List<Card> getCards() {
         return cards;
-    }
-    
-    public boolean isFirst() {
-        return position == 0;
-    }
-    
-    public boolean isLast() {
-        return position == cards.size() - 1;
     }
 }
