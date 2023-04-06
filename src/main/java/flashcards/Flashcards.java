@@ -1,5 +1,6 @@
 package flashcards;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -150,6 +151,7 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
     public void save() {
         try {
             XmlMapper mapper = new XmlMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
             mapper.writeValue(file, deck);
         } catch (IOException e) {
             System.err.println(e);
