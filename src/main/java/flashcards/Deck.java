@@ -53,14 +53,6 @@ public class Deck {
         position = cards.size() - 1;
         return cards.get(position);
     }
-        
-    public int position() {
-        return position;
-    }
-    
-    public int size() {
-        return cards.size();
-    }
     
     public boolean isFirst() {
         return position == 0;
@@ -68,6 +60,14 @@ public class Deck {
     
     public boolean isLast() {
         return position == cards.size() - 1;
+    }
+        
+    public int position() {
+        return position;
+    }
+    
+    public int size() {
+        return cards.size();
     }
     
     public void swap(int i, int j) {
