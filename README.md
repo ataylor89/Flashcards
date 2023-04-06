@@ -2,4 +2,4 @@
 
 ## Serialization and deserialization
 
-If the Deck or Card classes are changed, then it might not be possible to deserialize a deck file that was serialized using a previous version of code. If this ever happens, the previous version of code can be checked out and used to deserialize the deck file.
+I started out using the ObjectOutputStream class to serialize data to file. But I ran into some issues when I tried to deserialize a file that was serialized with a different version of code. These issues were caused by changes to the data structure. For this reason I decided to save the deck as an XML file.
