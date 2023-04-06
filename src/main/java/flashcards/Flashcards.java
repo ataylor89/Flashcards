@@ -192,19 +192,23 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
         else if (e.getSource() == create) {
             deck.add(new Card());
             deck.last();
+            faceUp = true;
             updateView();
         }
         else if (e.getSource() == delete) {
             deck.remove();
+            faceUp = true;
             updateView();
         }
         else if (e.getSource() == newDeck) {
             this.deck = new Deck();
             this.deck.add(new Card());
             this.file = null;
+            faceUp = true;
             updateView();
         }
         else if (e.getSource() == openDeck) {
+            faceUp = true;
             open();
         }
         else if (e.getSource() == saveDeck) {
