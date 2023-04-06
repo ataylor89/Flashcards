@@ -7,8 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -40,7 +40,7 @@ import javax.swing.event.MenuListener;
  *
  * @author andrewtaylor
  */
-public class Flashcards extends JFrame implements ActionListener, FocusListener, MenuListener {
+public class Flashcards extends JFrame implements ActionListener {
     
     private JMenuBar menuBar;
     private JMenu fileMenu;
@@ -68,17 +68,11 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
-        fileMenu.addMenuListener(this);
         newDeck = new JMenuItem("New");
-        newDeck.addActionListener(this);
         openDeck = new JMenuItem("Open");
-        openDeck.addActionListener(this);
         saveDeck = new JMenuItem("Save");
-        saveDeck.addActionListener(this);
         saveDeckAs = new JMenuItem("Save as");
-        saveDeckAs.addActionListener(this);
         exit = new JMenuItem("Exit");
-        exit.addActionListener(this);
         fileMenu.add(newDeck);
         fileMenu.add(openDeck);
         fileMenu.add(saveDeck);
@@ -97,7 +91,6 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
         contentPane.add(top);
         flashcard = new JTextPane();
         flashcard.setFont(new Font("Sans Serif", Font.PLAIN, 30));
-        flashcard.addFocusListener(this);
         scrollPane = new JScrollPane(flashcard);
         scrollPane.setMinimumSize(new Dimension(600, 400));
         scrollPane.setMaximumSize(new Dimension(600, 400));
@@ -107,19 +100,12 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
         controls.setMinimumSize(new Dimension(600, 40));
         controls.setMaximumSize(new Dimension(600, 40));
         next = new JButton("Next");
-        next.addActionListener(this);
         back = new JButton("Back");
-        back.addActionListener(this);
         flip = new JButton("Flip");
-        flip.addActionListener(this);
         up = new JButton("Up");
-        up.addActionListener(this);
         down = new JButton("Down");
-        down.addActionListener(this);
         create = new JButton("New");
-        create.addActionListener(this);
         delete = new JButton("Delete");
-        delete.addActionListener(this);
         controls.add(next);
         controls.add(back);
         controls.add(flip);
@@ -130,13 +116,9 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
         contentPane.add(controls);
         setContentPane(contentPane);
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
+        setupKeyStrokes();
+        setupListeners();
         updateView();
-        contentPane.addMouseListener(new MouseAdapter() {
-           @Override
-           public void mouseClicked(MouseEvent e) {
-               contentPane.requestFocusInWindow();
-           } 
-        });
     }
     
     public void setupKeyStrokes() {
@@ -162,6 +144,62 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
             @Override
             public void actionPerformed(ActionEvent e) {
                 flip();
+            }
+        });
+    }
+    
+    public void setupListeners() {
+        newDeck.addActionListener(this);
+        openDeck.addActionListener(this);
+        saveDeck.addActionListener(this);
+        saveDeckAs.addActionListener(this);
+        exit.addActionListener(this);
+        next.addActionListener(this);
+        back.addActionListener(this);
+        flip.addActionListener(this);
+        up.addActionListener(this);
+        down.addActionListener(this);
+        create.addActionListener(this);
+        delete.addActionListener(this);
+        contentPane.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               contentPane.requestFocusInWindow();
+           } 
+        });
+        fileMenu.addMenuListener(new MenuListener() {
+            @Override
+            public void menuSelected(MenuEvent e) {
+                if (file == null) {
+                    saveDeck.setEnabled(false);
+                } else {
+                    saveDeck.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void menuDeselected(MenuEvent e) {}
+
+            @Override
+            public void menuCanceled(MenuEvent e) {}
+        });
+        flashcard.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (e.getSource() == flashcard) {
+                    String text = flashcard.getText();
+                    Card card = deck.current();
+                    if (faceUp) {
+                        if (!card.getFront().equals(text)) {
+                            card.setFront(text);
+                        }
+                    }
+                    else {
+                        if (!card.getBack().equals(text)) {
+                            card.setBack(text);
+                        }
+                    }
+                }
             }
         });
     }
@@ -297,47 +335,10 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
             System.exit(0);
         }
     }    
-    
-    @Override
-    public void focusGained(FocusEvent e) {}
-
-    @Override
-    public void focusLost(FocusEvent e) {
-        if (e.getSource() == flashcard) {
-            String text = flashcard.getText();
-            Card card = deck.current();
-            if (faceUp) {
-                if (!card.getFront().equals(text)) {
-                    card.setFront(text);
-                }
-            }
-            else {
-                if (!card.getBack().equals(text)) {
-                    card.setBack(text);
-                }
-            }
-        }
-    }
-    
-    @Override
-    public void menuSelected(MenuEvent e) {
-        if (file == null) {
-            saveDeck.setEnabled(false);
-        } else {
-            saveDeck.setEnabled(true);
-        }
-    }
-
-    @Override
-    public void menuDeselected(MenuEvent e) {}
-
-    @Override
-    public void menuCanceled(MenuEvent e) {}
-       
+            
     public static void main(String[] args) {
         Flashcards flashcards = new Flashcards();
         flashcards.createAndShowGui();
-        flashcards.setupKeyStrokes();
         flashcards.setVisible(true);
     }
 }
