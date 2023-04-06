@@ -9,12 +9,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,6 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
@@ -123,12 +131,95 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
         setContentPane(contentPane);
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
         updateView();
+        contentPane.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               contentPane.requestFocusInWindow();
+           } 
+        });
+    }
+    
+    public void setupKeyStrokes() {
+        InputMap im = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "next");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "previous");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "flip");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "flip");
+        ActionMap am = contentPane.getActionMap();
+        am.put("next", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                next();
+            }
+        });
+        am.put("previous", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                previous();
+            }
+        });
+        am.put("flip", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                flip();
+            }
+        });
     }
     
     private void updateView() {
         position.setText(deck.position() + 1 + " of " + deck.size() + (faceUp ? " (front) " : " (back) "));
         Card card = deck.current();
         flashcard.setText(faceUp ? card.getFront() : card.getBack());
+    }
+    
+    public void next() {
+        deck.next();
+        faceUp = true;
+        updateView();
+    }
+    
+    public void previous() {
+        deck.previous();
+        faceUp = true;
+        updateView();
+    }
+    
+    public void flip() {
+        faceUp = !faceUp;
+        updateView();
+    }
+    
+    public void up() {
+        deck.swap(deck.position(), deck.position() + 1);
+        deck.next();
+        updateView();
+    }
+    
+    public void down() {
+        deck.swap(deck.position(), deck.position() - 1);
+        deck.previous();
+        updateView();
+    }
+    
+    public void newCard() {
+        deck.add(new Card());
+        deck.last();
+        faceUp = true;
+        updateView();
+    }
+    
+    public void removeCard() {
+        deck.remove();
+        faceUp = true;
+        updateView();
+    }
+    
+    public void newDeck() {
+        this.deck = new Deck();
+        this.deck.add(new Card());
+        this.file = null;
+        faceUp = true;
+        updateView();
     }
     
     public void open(File file) {
@@ -168,46 +259,28 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == next) {
-            deck.next();
-            faceUp = true;
-            updateView();
+            next();
         }
         else if (e.getSource() == back) {
-            deck.previous();
-            faceUp = true;
-            updateView();
+            previous();
         }
         else if (e.getSource() == flip) {
-            faceUp = !faceUp;
-            updateView();
+            flip();
         }
         else if (e.getSource() == up) {
-            deck.swap(deck.position(), deck.position() + 1);
-            deck.next();
-            updateView();
+            up();
         }
         else if (e.getSource() == down) {
-            deck.swap(deck.position(), deck.position() - 1);
-            deck.previous();
-            updateView();
+            down();
         }
         else if (e.getSource() == create) {
-            deck.add(new Card());
-            deck.last();
-            faceUp = true;
-            updateView();
+            newCard();
         }
         else if (e.getSource() == delete) {
-            deck.remove();
-            faceUp = true;
-            updateView();
+            removeCard();
         }
         else if (e.getSource() == newDeck) {
-            this.deck = new Deck();
-            this.deck.add(new Card());
-            this.file = null;
-            faceUp = true;
-            updateView();
+            newDeck();
         }
         else if (e.getSource() == openDeck) {
             faceUp = true;
@@ -260,10 +333,11 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
 
     @Override
     public void menuCanceled(MenuEvent e) {}
-    
+       
     public static void main(String[] args) {
         Flashcards flashcards = new Flashcards();
         flashcards.createAndShowGui();
+        flashcards.setupKeyStrokes();
         flashcards.setVisible(true);
     }
 }
