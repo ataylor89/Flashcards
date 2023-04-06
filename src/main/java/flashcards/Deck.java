@@ -72,4 +72,8 @@ public class Deck implements Serializable {
             cards.set(j, card_i);
         }
     }
+    
+    public List<Card> getCards() {
+        return cards;
+    }
 }

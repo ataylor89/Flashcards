@@ -1,5 +1,6 @@
 package flashcards;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -9,11 +10,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -134,10 +131,11 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
     }
     
     public void open(File file) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-            this.deck = (Deck) in.readObject();
+        try {
+            XmlMapper mapper = new XmlMapper();
+            this.deck = mapper.readValue(file, Deck.class);
             updateView();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.err.println(e);
         }
     }
@@ -150,8 +148,9 @@ public class Flashcards extends JFrame implements ActionListener, FocusListener,
     }
     
     public void save() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
-            out.writeObject(deck);
+        try {
+            XmlMapper mapper = new XmlMapper();
+            mapper.writeValue(file, deck);
         } catch (IOException e) {
             System.err.println(e);
         }
