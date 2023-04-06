@@ -75,4 +75,12 @@ public class Deck {
     public List<Card> getCards() {
         return cards;
     }
+    
+    public boolean isFirst() {
+        return position == 0;
+    }
+    
+    public boolean isLast() {
+        return position == cards.size() - 1;
+    }
 }

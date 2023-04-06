@@ -123,27 +123,29 @@ public class Flashcards extends JFrame implements ActionListener {
     
     public void setupKeyStrokes() {
         InputMap im = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "next");
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "previous");
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "flip");
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "flip");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "right");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "left");
         ActionMap am = contentPane.getActionMap();
-        am.put("next", new AbstractAction() {
+        am.put("right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                next();
+                if (faceUp) {
+                    flip();
+                }
+                else if (!deck.isLast()) {
+                    next();
+                }
             }
         });
-        am.put("previous", new AbstractAction() {
+        am.put("left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                previous();
-            }
-        });
-        am.put("flip", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                flip();
+                if (!faceUp) {
+                    flip();
+                }
+                else if (!deck.isFirst()) {
+                    previous();
+                }
             }
         });
     }
