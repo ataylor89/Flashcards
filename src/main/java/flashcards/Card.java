@@ -1,12 +1,10 @@
 package flashcards;
 
-import java.io.Serializable;
-
 /**
  *
  * @author andrewtaylor
  */
-public class Card implements Serializable {
+public class Card {
     private String front, back;
     
     public Card() {

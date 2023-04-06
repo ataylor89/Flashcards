@@ -1,6 +1,5 @@
 package flashcards;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +7,7 @@ import java.util.List;
  *
  * @author andrewtaylor
  */
-public class Deck implements Serializable {
+public class Deck {
     private List<Card> cards;
     private int position;
         
