@@ -1,5 +1,6 @@
 package flashcards;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,10 +55,12 @@ public class Deck {
         return cards.get(position);
     }
     
+    @JsonIgnore
     public boolean isFirst() {
         return position == 0;
     }
     
+    @JsonIgnore
     public boolean isLast() {
         return position == cards.size() - 1;
     }
