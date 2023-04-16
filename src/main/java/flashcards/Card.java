@@ -8,9 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Card {
     private String front, back;
-    private int orientation;
-    public static final int FRONT = 0;
-    public static final int BACK = 1;
+    private boolean frontSideUp;
     
     public Card() {
         this.front = "";
@@ -38,32 +36,21 @@ public class Card {
         return back;
     }
     
-    @JsonIgnore
-    public void setOrientation(int orientation) {
-        this.orientation = orientation;
-    }
-    
-    @JsonIgnore
-    public int getOrientation() {
-        return orientation;
-    }
-    
     public void flip() {
-        if (orientation == FRONT) {
-            orientation = BACK;
-        }
-        else if (orientation == BACK) {
-            orientation = FRONT;
-        }
+        frontSideUp = !frontSideUp;
+    }
+    
+    public void reset() {
+        frontSideUp = true;
     }
     
     @JsonIgnore
     public boolean frontSideUp() {
-        return orientation == FRONT;
+        return frontSideUp;
     }
     
     @JsonIgnore
     public boolean backSideUp() {
-        return orientation == BACK;
+        return !frontSideUp;
     }
 }

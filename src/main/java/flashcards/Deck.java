@@ -48,12 +48,16 @@ public class Deck {
     
     public Card first() {
         position = 0;
-        return cards.get(position);
+        Card card = cards.get(position);
+        card.reset();
+        return card;
     }
     
     public Card last() {
         position = cards.size() - 1;
-        return cards.get(position);
+        Card card = cards.get(position);
+        card.reset();
+        return card;
     }
     
     @JsonIgnore

@@ -43,7 +43,7 @@ public class CenterPanel extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 String text = textPane.getText();
                 Card card = deck.current();
-                if (card.getOrientation() == Card.FRONT) {
+                if (card.frontSideUp()) {
                     if (!card.getFront().equals(text)) {
                         card.setFront(text);
                     }
@@ -95,9 +95,8 @@ public class CenterPanel extends JPanel implements ActionListener {
 
     public void update() {        
         Card card = deck.current();
-        boolean frontSideUp = card.getOrientation() == Card.FRONT;
-        index.setText(deck.position() + 1 + " of " + deck.size() + (frontSideUp ? " (front) " : " (back) "));
-        textPane.setText(frontSideUp ? card.getFront() : card.getBack());
+        index.setText(deck.position() + 1 + " of " + deck.size() + (card.frontSideUp() ? " (front) " : " (back) "));
+        textPane.setText(card.frontSideUp() ? card.getFront() : card.getBack());
     }
 
     @Override
