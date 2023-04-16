@@ -14,6 +14,7 @@ public class Deck {
         
     public Deck() {   
         cards = new ArrayList<>();
+        cards.add(new Card());
     }
     
     public void add(Card card) {

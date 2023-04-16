@@ -2,13 +2,8 @@ package flashcards;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,21 +15,14 @@ import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.InputMap;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -42,27 +30,20 @@ import javax.swing.event.MenuListener;
  *
  * @author andrewtaylor
  */
-public class Flashcards extends JFrame implements ActionListener {
+public class Flashcards extends JFrame implements ActionListener, MenuListener {
     
     private JMenuBar menuBar;
     private JMenu fileMenu;
     private JMenuItem newDeck, openDeck, saveDeck, saveDeckAs, exit;
     private JPanel contentPane;
-    private JPanel top;
-    private JLabel position;
-    private JTextPane flashcard;
-    private JScrollPane scrollPane;
-    private JPanel controls;
-    private JButton previous, next, first, last, flip, up, down, create, delete;
+    private CenterPanel centerPanel;
     private JFileChooser fileChooser;
     private File file;
     private Deck deck;
-    private boolean faceUp = true;
     
     public Flashcards() {
         super("Flashcards");
         deck = new Deck();
-        deck.add(new Card());
     }
     
     public void createAndShowGui() {
@@ -85,50 +66,29 @@ public class Flashcards extends JFrame implements ActionListener {
         contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         contentPane.add(Box.createVerticalStrut(100));
-        top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        top.setMinimumSize(new Dimension(800, 40));
-        top.setMaximumSize(new Dimension(800, 40));
-        position = new JLabel();
-        top.add(position);
-        contentPane.add(top);
-        flashcard = new JTextPane();
-        flashcard.setFont(new Font("Sans Serif", Font.PLAIN, 30));
-        scrollPane = new JScrollPane(flashcard);
-        scrollPane.setMinimumSize(new Dimension(800, 400));
-        scrollPane.setMaximumSize(new Dimension(800, 400));
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        contentPane.add(scrollPane);
-        controls = new JPanel();
-//        controls = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        controls.setMinimumSize(new Dimension(800, 40));
-        controls.setMaximumSize(new Dimension(800, 40));
-        previous = new JButton("Previous");
-        next = new JButton("Next");
-        flip = new JButton("Flip");
-        first = new JButton("First");
-        last = new JButton("Last");
-        up = new JButton("Up");
-        down = new JButton("Down");
-        create = new JButton("New");
-        delete = new JButton("Delete");
-        controls.add(previous);
-        controls.add(next);
-        controls.add(flip);
-        controls.add(first);
-        controls.add(last);
-        controls.add(up);
-        controls.add(down);
-        controls.add(create);
-        controls.add(delete);
-        contentPane.add(controls);
+        centerPanel = new CenterPanel();
+        centerPanel.setDeck(deck);
+        centerPanel.update();
+        contentPane.add(centerPanel);
+        contentPane.add(Box.createVerticalStrut(100));
         setContentPane(contentPane);
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
-        setupKeyStrokes();
         setupListeners();
-        updateView();
     }
     
-    public void setupKeyStrokes() {
+    public void setupListeners() {
+        newDeck.addActionListener(this);
+        openDeck.addActionListener(this);
+        saveDeck.addActionListener(this);
+        saveDeckAs.addActionListener(this);
+        exit.addActionListener(this);
+        contentPane.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               contentPane.requestFocusInWindow();
+           } 
+        });
+        fileMenu.addMenuListener(this);
         InputMap im = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "right");
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "left");
@@ -138,170 +98,62 @@ public class Flashcards extends JFrame implements ActionListener {
         am.put("right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (faceUp) {
-                    flip();
+                int orientation = deck.current().getOrientation();
+                boolean frontSideUp = orientation == Card.FRONT;
+                if (frontSideUp) {
+                    deck.current().flip();
+                    centerPanel.update();
                 }
                 else if (!deck.isLast()) {
-                    next();
+                    deck.next();
+                    centerPanel.update();
                 }
             }
         });
         am.put("left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!faceUp) {
-                    flip();
+                int orientation = deck.current().getOrientation();
+                boolean frontSideUp = orientation == Card.FRONT;
+                if (!frontSideUp) {
+                    deck.current().flip();
+                    centerPanel.update();
                 }
                 else if (!deck.isFirst()) {
-                    previous();
+                    deck.previous();
+                    centerPanel.update();
                 }
             }
         });
         am.put("up", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                last();
+                deck.last();
+                centerPanel.update();
             }
         });
         am.put("down", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                first();
+                deck.first();
+                centerPanel.update();
             }
         });
-    }
-    
-    public void setupListeners() {
-        newDeck.addActionListener(this);
-        openDeck.addActionListener(this);
-        saveDeck.addActionListener(this);
-        saveDeckAs.addActionListener(this);
-        exit.addActionListener(this);
-        next.addActionListener(this);
-        previous.addActionListener(this);
-        flip.addActionListener(this);
-        first.addActionListener(this);
-        last.addActionListener(this);
-        up.addActionListener(this);
-        down.addActionListener(this);
-        create.addActionListener(this);
-        delete.addActionListener(this);
-        contentPane.addMouseListener(new MouseAdapter() {
-           @Override
-           public void mouseClicked(MouseEvent e) {
-               contentPane.requestFocusInWindow();
-           } 
-        });
-        fileMenu.addMenuListener(new MenuListener() {
-            @Override
-            public void menuSelected(MenuEvent e) {
-                if (file == null) {
-                    saveDeck.setEnabled(false);
-                } else {
-                    saveDeck.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void menuDeselected(MenuEvent e) {}
-
-            @Override
-            public void menuCanceled(MenuEvent e) {}
-        });
-        flashcard.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (e.getSource() == flashcard) {
-                    String text = flashcard.getText();
-                    Card card = deck.current();
-                    if (faceUp) {
-                        if (!card.getFront().equals(text)) {
-                            card.setFront(text);
-                        }
-                    }
-                    else {
-                        if (!card.getBack().equals(text)) {
-                            card.setBack(text);
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
-    private void updateView() {
-        position.setText(deck.position() + 1 + " of " + deck.size() + (faceUp ? " (front) " : " (back) "));
-        Card card = deck.current();
-        flashcard.setText(faceUp ? card.getFront() : card.getBack());
-    }
-    
-    public void next() {
-        deck.next();
-        faceUp = true;
-        updateView();
-    }
-    
-    public void previous() {
-        deck.previous();
-        faceUp = true;
-        updateView();
-    }
-    
-    public void flip() {
-        faceUp = !faceUp;
-        updateView();
-    }
-    
-    public void first() {
-        faceUp = true;
-        deck.first();
-        updateView();
-    }
-    
-    public void last() {
-        faceUp = true;
-        deck.last();
-        updateView();
-    }
-    
-    public void up() {
-        deck.swap(deck.position(), deck.position() + 1);
-        deck.next();
-        updateView();
-    }
-    
-    public void down() {
-        deck.swap(deck.position(), deck.position() - 1);
-        deck.previous();
-        updateView();
-    }
-    
-    public void newCard() {
-        deck.add(new Card());
-        deck.last();
-        faceUp = true;
-        updateView();
-    }
-    
-    public void removeCard() {
-        deck.remove();
-        faceUp = true;
-        updateView();
     }
     
     public void newDeck() {
         this.deck = new Deck();
-        this.deck.add(new Card());
         this.file = null;
-        faceUp = true;
-        updateView();
+        centerPanel.setDeck(deck);
+        centerPanel.update();
     }
     
     public void open(File file) {
         try {
             XmlMapper mapper = new XmlMapper();
             this.deck = mapper.readValue(file, Deck.class);
-            updateView();
+            centerPanel.setDeck(deck);
+            centerPanel.update();
         } catch (IOException e) {
             System.err.println(e);
         }
@@ -333,38 +185,10 @@ public class Flashcards extends JFrame implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == next) {
-            next();
-        }
-        else if (e.getSource() == previous) {
-            previous();
-        }
-        else if (e.getSource() == flip) {
-            flip();
-        }
-        else if (e.getSource() == first) {
-            first();
-        }
-        else if (e.getSource() == last) {
-            last();
-        }
-        else if (e.getSource() == up) {
-            up();
-        }
-        else if (e.getSource() == down) {
-            down();
-        }
-        else if (e.getSource() == create) {
-            newCard();
-        }
-        else if (e.getSource() == delete) {
-            removeCard();
-        }
-        else if (e.getSource() == newDeck) {
+        if (e.getSource() == newDeck) {
             newDeck();
         }
         else if (e.getSource() == openDeck) {
-            faceUp = true;
             open();
         }
         else if (e.getSource() == saveDeck) {
@@ -377,7 +201,22 @@ public class Flashcards extends JFrame implements ActionListener {
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
             System.exit(0);
         }
-    }    
+    }
+    
+    @Override
+    public void menuSelected(MenuEvent e) {
+        if (file == null) {
+            saveDeck.setEnabled(false);
+        } else {
+            saveDeck.setEnabled(true);
+        }
+    }
+
+    @Override
+    public void menuDeselected(MenuEvent e) {}
+
+    @Override
+    public void menuCanceled(MenuEvent e) {}    
             
     public static void main(String[] args) {
         Flashcards flashcards = new Flashcards();
