@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Card {
     private String front, back;
-    private boolean frontSideUp;
+    private boolean frontSideUp = true;
     
     public Card() {
         this.front = "";
