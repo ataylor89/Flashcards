@@ -65,12 +65,12 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         setJMenuBar(menuBar);
         contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-        contentPane.add(Box.createVerticalStrut(100));
+        contentPane.add(Box.createVerticalStrut(125));
         centerPanel = new CenterPanel();
         centerPanel.setDeck(deck);
         centerPanel.update();
         contentPane.add(centerPanel);
-        contentPane.add(Box.createVerticalStrut(100));
+        contentPane.add(Box.createVerticalStrut(125));
         setContentPane(contentPane);
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
         setupListeners();
@@ -98,10 +98,9 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         am.put("right", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int orientation = deck.current().getOrientation();
-                boolean frontSideUp = orientation == Card.FRONT;
-                if (frontSideUp) {
-                    deck.current().flip();
+                Card card = deck.current();
+                if (card.frontSideUp()) {
+                    card.flip();
                     centerPanel.update();
                 }
                 else if (!deck.isLast()) {
@@ -113,10 +112,9 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         am.put("left", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int orientation = deck.current().getOrientation();
-                boolean frontSideUp = orientation == Card.FRONT;
-                if (!frontSideUp) {
-                    deck.current().flip();
+                Card card = deck.current();
+                if (card.backSideUp()) {
+                    card.flip();
                     centerPanel.update();
                 }
                 else if (!deck.isFirst()) {

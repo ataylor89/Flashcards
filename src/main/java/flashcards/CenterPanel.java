@@ -23,17 +23,17 @@ public class CenterPanel extends JPanel implements ActionListener {
     private JTextPane textPane;
     private JScrollPane scrollPane;
     private JPanel controls;
-    private JButton previous, next, first, last, flip, up, down, create, delete;
+    private JButton forward, back, first, last, up, down, create, delete;
     private Deck deck;
     
     public CenterPanel() {
         super(new BorderLayout());
-        setMinimumSize(new Dimension(800, 600));
-        setMaximumSize(new Dimension(800, 600));
         addComponents();
     }
     
     public final void addComponents() {
+        setMinimumSize(new Dimension(750, 500));
+        setMaximumSize(new Dimension(750, 500));
         index = new JLabel();
         add(index, BorderLayout.NORTH);
         textPane = new JTextPane();
@@ -58,27 +58,24 @@ public class CenterPanel extends JPanel implements ActionListener {
         scrollPane = new JScrollPane(textPane);
         add(scrollPane, BorderLayout.CENTER);
         controls = new JPanel();
-        previous = new JButton("Previous");
-        next = new JButton("Next");
-        flip = new JButton("Flip");
+        forward = new JButton("Forward");
+        back = new JButton("Back");
         first = new JButton("First");
         last = new JButton("Last");
         up = new JButton("Up");
         down = new JButton("Down");
         create = new JButton("New");
         delete = new JButton("Delete");
-        previous.addActionListener(this);
-        next.addActionListener(this);
-        flip.addActionListener(this);
+        forward.addActionListener(this);
+        back.addActionListener(this);
         first.addActionListener(this);
         last.addActionListener(this);
         up.addActionListener(this);
         down.addActionListener(this);
         create.addActionListener(this);
         delete.addActionListener(this);
-        controls.add(previous);
-        controls.add(next);
-        controls.add(flip);
+        controls.add(forward);
+        controls.add(back);
         controls.add(first);
         controls.add(last);
         controls.add(up);
@@ -105,17 +102,27 @@ public class CenterPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == next) {
-            deck.next();
-            update();
+        if (e.getSource() == forward) {
+            Card card = deck.current();
+            if (card.frontSideUp()) {
+                card.flip();
+                update();
+            }
+            else if (!deck.isLast()) {
+                deck.next();
+                update();
+            }
         }
-        else if (e.getSource() == previous) {
-            deck.previous();
-            update();
-        }
-        else if (e.getSource() == flip) {
-            deck.current().flip();
-            update();
+        else if (e.getSource() == back) {
+            Card card = deck.current();
+            if (card.backSideUp()) {
+                card.flip();
+                update();
+            }
+            else if (!deck.isFirst()) {
+                deck.previous();
+                update();
+            }
         }
         else if (e.getSource() == first) {
             deck.first();

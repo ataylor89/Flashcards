@@ -56,4 +56,14 @@ public class Card {
             orientation = FRONT;
         }
     }
+    
+    @JsonIgnore
+    public boolean frontSideUp() {
+        return orientation == FRONT;
+    }
+    
+    @JsonIgnore
+    public boolean backSideUp() {
+        return orientation == BACK;
+    }
 }
