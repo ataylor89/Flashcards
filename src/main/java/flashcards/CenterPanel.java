@@ -17,7 +17,7 @@ import javax.swing.JTextPane;
  *
  * @author andrewtaylor
  */
-public class CenterPanel extends JPanel implements ActionListener {
+public final class CenterPanel extends JPanel implements ActionListener {
     
     private JLabel index;
     private JTextPane textPane;
@@ -28,12 +28,12 @@ public class CenterPanel extends JPanel implements ActionListener {
     
     public CenterPanel() {
         super(new BorderLayout());
+        setMinimumSize(new Dimension(750, 500));
+        setMaximumSize(new Dimension(750, 500));
         addComponents();
     }
     
     public final void addComponents() {
-        setMinimumSize(new Dimension(750, 500));
-        setMaximumSize(new Dimension(750, 500));
         index = new JLabel();
         add(index, BorderLayout.NORTH);
         textPane = new JTextPane();
