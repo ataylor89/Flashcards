@@ -30,9 +30,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -51,7 +53,7 @@ public class Flashcards extends JFrame implements ActionListener {
     private JTextPane flashcard;
     private JScrollPane scrollPane;
     private JPanel controls;
-    private JButton next, back, flip, up, down, create, delete;
+    private JButton previous, next, first, last, flip, up, down, create, delete;
     private JFileChooser fileChooser;
     private File file;
     private Deck deck;
@@ -64,7 +66,7 @@ public class Flashcards extends JFrame implements ActionListener {
     }
     
     public void createAndShowGui() {
-        setSize(900, 900);
+        setSize(1200, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
@@ -84,31 +86,36 @@ public class Flashcards extends JFrame implements ActionListener {
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         contentPane.add(Box.createVerticalStrut(100));
         top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        top.setMinimumSize(new Dimension(600, 40));
-        top.setMaximumSize(new Dimension(600, 40));
+        top.setMinimumSize(new Dimension(800, 40));
+        top.setMaximumSize(new Dimension(800, 40));
         position = new JLabel();
         top.add(position);
         contentPane.add(top);
         flashcard = new JTextPane();
         flashcard.setFont(new Font("Sans Serif", Font.PLAIN, 30));
         scrollPane = new JScrollPane(flashcard);
-        scrollPane.setMinimumSize(new Dimension(600, 400));
-        scrollPane.setMaximumSize(new Dimension(600, 400));
+        scrollPane.setMinimumSize(new Dimension(800, 400));
+        scrollPane.setMaximumSize(new Dimension(800, 400));
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         contentPane.add(scrollPane);
-        controls = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        controls.setMinimumSize(new Dimension(600, 40));
-        controls.setMaximumSize(new Dimension(600, 40));
+        controls = new JPanel();
+//        controls = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        controls.setMinimumSize(new Dimension(800, 40));
+        controls.setMaximumSize(new Dimension(800, 40));
+        previous = new JButton("Previous");
         next = new JButton("Next");
-        back = new JButton("Back");
         flip = new JButton("Flip");
+        first = new JButton("First");
+        last = new JButton("Last");
         up = new JButton("Up");
         down = new JButton("Down");
         create = new JButton("New");
         delete = new JButton("Delete");
+        controls.add(previous);
         controls.add(next);
-        controls.add(back);
         controls.add(flip);
+        controls.add(first);
+        controls.add(last);
         controls.add(up);
         controls.add(down);
         controls.add(create);
@@ -125,6 +132,8 @@ public class Flashcards extends JFrame implements ActionListener {
         InputMap im = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "right");
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "left");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "up");
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "down");
         ActionMap am = contentPane.getActionMap();
         am.put("right", new AbstractAction() {
             @Override
@@ -148,6 +157,18 @@ public class Flashcards extends JFrame implements ActionListener {
                 }
             }
         });
+        am.put("up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                last();
+            }
+        });
+        am.put("down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                first();
+            }
+        });
     }
     
     public void setupListeners() {
@@ -157,8 +178,10 @@ public class Flashcards extends JFrame implements ActionListener {
         saveDeckAs.addActionListener(this);
         exit.addActionListener(this);
         next.addActionListener(this);
-        back.addActionListener(this);
+        previous.addActionListener(this);
         flip.addActionListener(this);
+        first.addActionListener(this);
+        last.addActionListener(this);
         up.addActionListener(this);
         down.addActionListener(this);
         create.addActionListener(this);
@@ -226,6 +249,18 @@ public class Flashcards extends JFrame implements ActionListener {
     
     public void flip() {
         faceUp = !faceUp;
+        updateView();
+    }
+    
+    public void first() {
+        faceUp = true;
+        deck.first();
+        updateView();
+    }
+    
+    public void last() {
+        faceUp = true;
+        deck.last();
         updateView();
     }
     
@@ -301,11 +336,17 @@ public class Flashcards extends JFrame implements ActionListener {
         if (e.getSource() == next) {
             next();
         }
-        else if (e.getSource() == back) {
+        else if (e.getSource() == previous) {
             previous();
         }
         else if (e.getSource() == flip) {
             flip();
+        }
+        else if (e.getSource() == first) {
+            first();
+        }
+        else if (e.getSource() == last) {
+            last();
         }
         else if (e.getSource() == up) {
             up();
