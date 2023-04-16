@@ -9,7 +9,7 @@ import java.util.List;
  * @author andrewtaylor
  */
 public class Deck {
-    private List<Card> cards;
+    private final List<Card> cards;
     private int position;
         
     public Deck() {   
