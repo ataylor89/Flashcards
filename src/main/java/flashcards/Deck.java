@@ -15,6 +15,7 @@ public class Deck {
     public Deck() {   
         cards = new ArrayList<>();
         cards.add(new Card());
+        position = 0;
     }
     
     public void add(Card card) {
