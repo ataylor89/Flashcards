@@ -2,6 +2,7 @@ package flashcards;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -47,8 +48,6 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
     }
     
     public void createAndShowGui() {
-        setSize(1200, 900);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
         newDeck = new JMenuItem("New");
@@ -65,6 +64,7 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         setJMenuBar(menuBar);
         contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+        contentPane.setPreferredSize(new Dimension(1200, 900));
         contentPane.add(Box.createVerticalStrut(125));
         centerPanel = new CenterPanel();
         centerPanel.setDeck(deck);
@@ -73,10 +73,10 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         contentPane.add(Box.createVerticalStrut(125));
         setContentPane(contentPane);
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
-        setupListeners();
+        addListeners();
     }
     
-    public void setupListeners() {
+    public void addListeners() {
         newDeck.addActionListener(this);
         openDeck.addActionListener(this);
         saveDeck.addActionListener(this);
@@ -218,7 +218,9 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
             
     public static void main(String[] args) {
         Flashcards flashcards = new Flashcards();
+        flashcards.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         flashcards.createAndShowGui();
+        flashcards.pack();
         flashcards.setVisible(true);
     }
 }

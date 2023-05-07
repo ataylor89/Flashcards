@@ -23,12 +23,12 @@ public final class CenterPanel extends JPanel implements ActionListener {
     private JTextPane textPane;
     private JScrollPane scrollPane;
     private JPanel controls;
-    private JButton forward, back, first, last, up, down, create, delete;
+    private JButton back, forward, first, last, up, down, create, delete;
     private Deck deck;
     
     public CenterPanel() {
         super(new BorderLayout());
-        setMinimumSize(new Dimension(750, 500));
+        setPreferredSize(new Dimension(750, 500));
         setMaximumSize(new Dimension(750, 500));
         addComponents();
     }
@@ -58,24 +58,24 @@ public final class CenterPanel extends JPanel implements ActionListener {
         scrollPane = new JScrollPane(textPane);
         add(scrollPane, BorderLayout.CENTER);
         controls = new JPanel();
-        forward = new JButton("Forward");
         back = new JButton("Back");
+        forward = new JButton("Forward");
         first = new JButton("First");
         last = new JButton("Last");
         up = new JButton("Up");
         down = new JButton("Down");
         create = new JButton("New");
         delete = new JButton("Delete");
-        forward.addActionListener(this);
         back.addActionListener(this);
+        forward.addActionListener(this);
         first.addActionListener(this);
         last.addActionListener(this);
         up.addActionListener(this);
         down.addActionListener(this);
         create.addActionListener(this);
         delete.addActionListener(this);
-        controls.add(forward);
         controls.add(back);
+        controls.add(forward);
         controls.add(first);
         controls.add(last);
         controls.add(up);
