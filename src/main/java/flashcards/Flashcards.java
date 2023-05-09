@@ -48,6 +48,7 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
     }
     
     public void createAndShowGui() {
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
         newDeck = new JMenuItem("New");
@@ -74,6 +75,8 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         setContentPane(contentPane);
         fileChooser = new JFileChooser(System.getProperty("user.dir"));
         addListeners();
+        pack();
+        setVisible(true);
     }
     
     public void addListeners() {
@@ -218,9 +221,6 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
             
     public static void main(String[] args) {
         Flashcards flashcards = new Flashcards();
-        flashcards.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         flashcards.createAndShowGui();
-        flashcards.pack();
-        flashcards.setVisible(true);
     }
 }

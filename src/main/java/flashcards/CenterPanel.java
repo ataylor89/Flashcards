@@ -33,7 +33,7 @@ public final class CenterPanel extends JPanel implements ActionListener {
         addComponents();
     }
     
-    public void addComponents() {
+    private void addComponents() {
         index = new JLabel();
         add(index, BorderLayout.NORTH);
         textPane = new JTextPane();
