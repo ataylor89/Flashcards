@@ -1,6 +1,7 @@
 package flashcards;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +10,10 @@ import java.util.List;
  * @author andrewtaylor
  */
 public class Deck {
+    
     private final List<Card> cards;
     private int position;
+    private File file;
         
     public Deck() {   
         cards = new ArrayList<>();
@@ -90,5 +93,15 @@ public class Deck {
     
     public List<Card> getCards() {
         return cards;
+    }
+    
+    @JsonIgnore
+    public void setFile(File file) {
+        this.file = file;
+    }
+    
+    @JsonIgnore
+    public File getFile() {
+        return file;
     }
 }

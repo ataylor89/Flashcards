@@ -38,7 +38,6 @@ public class Flashcards extends JFrame implements ActionListener {
     private CenterPanel centerPanel;
     private JFileChooser fileChooser;
     private Deck deck;
-    private File file;
     
     public Flashcards() {
         super("Flashcards");
@@ -142,7 +141,6 @@ public class Flashcards extends JFrame implements ActionListener {
     
     public void newFile() {
         this.deck = new Deck();
-        this.file = null;
         centerPanel.setDeck(deck);
         centerPanel.update();
         saveFile.setEnabled(false);
@@ -151,7 +149,8 @@ public class Flashcards extends JFrame implements ActionListener {
     public void openFile(File file) {
         try {
             XmlMapper mapper = new XmlMapper();
-            this.deck = mapper.readValue(file, Deck.class);
+            deck = mapper.readValue(file, Deck.class);
+            deck.setFile(file);
             centerPanel.setDeck(deck);
             centerPanel.update();
         } catch (IOException e) {
@@ -161,7 +160,7 @@ public class Flashcards extends JFrame implements ActionListener {
     
     public void openFile() {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            this.file = fileChooser.getSelectedFile();
+            File file = fileChooser.getSelectedFile();
 	    openFile(file);
             saveFile.setEnabled(true);
 	}
@@ -171,6 +170,7 @@ public class Flashcards extends JFrame implements ActionListener {
         try {
             XmlMapper mapper = new XmlMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            File file = deck.getFile();
             mapper.writeValue(file, deck);
         } catch (IOException e) {
             System.err.println(e);
@@ -179,7 +179,8 @@ public class Flashcards extends JFrame implements ActionListener {
     
     public void saveFileAs() {
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            this.file = fileChooser.getSelectedFile();
+            File file = fileChooser.getSelectedFile();
+            deck.setFile(file);
 	    saveFile();
             saveFile.setEnabled(true);
 	}
