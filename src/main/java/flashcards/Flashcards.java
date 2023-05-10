@@ -33,12 +33,12 @@ public class Flashcards extends JFrame implements ActionListener {
     
     private JMenuBar menuBar;
     private JMenu fileMenu;
-    private JMenuItem newDeck, openDeck, saveDeck, saveDeckAs, exit;
+    private JMenuItem newFile, openFile, saveFile, saveFileAs, exit;
     private JPanel contentPane;
     private CenterPanel centerPanel;
     private JFileChooser fileChooser;
-    private File file;
     private Deck deck;
+    private File file;
     
     public Flashcards() {
         super("Flashcards");
@@ -49,16 +49,16 @@ public class Flashcards extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
-        newDeck = new JMenuItem("New");
-        openDeck = new JMenuItem("Open");
-        saveDeck = new JMenuItem("Save");
-        saveDeck.setEnabled(false);
-        saveDeckAs = new JMenuItem("Save as");
+        newFile = new JMenuItem("New");
+        openFile = new JMenuItem("Open");
+        saveFile = new JMenuItem("Save");
+        saveFile.setEnabled(false);
+        saveFileAs = new JMenuItem("Save as");
         exit = new JMenuItem("Exit");
-        fileMenu.add(newDeck);
-        fileMenu.add(openDeck);
-        fileMenu.add(saveDeck);
-        fileMenu.add(saveDeckAs);
+        fileMenu.add(newFile);
+        fileMenu.add(openFile);
+        fileMenu.add(saveFile);
+        fileMenu.add(saveFileAs);
         fileMenu.add(exit);
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
@@ -79,10 +79,10 @@ public class Flashcards extends JFrame implements ActionListener {
     }
     
     public void addListeners() {
-        newDeck.addActionListener(this);
-        openDeck.addActionListener(this);
-        saveDeck.addActionListener(this);
-        saveDeckAs.addActionListener(this);
+        newFile.addActionListener(this);
+        openFile.addActionListener(this);
+        saveFile.addActionListener(this);
+        saveFileAs.addActionListener(this);
         exit.addActionListener(this);
         contentPane.addMouseListener(new MouseAdapter() {
            @Override
@@ -140,15 +140,15 @@ public class Flashcards extends JFrame implements ActionListener {
         });
     }
     
-    public void newDeck() {
+    public void newFile() {
         this.deck = new Deck();
         this.file = null;
         centerPanel.setDeck(deck);
         centerPanel.update();
-        saveDeck.setEnabled(false);
+        saveFile.setEnabled(false);
     }
     
-    public void open(File file) {
+    public void openFile(File file) {
         try {
             XmlMapper mapper = new XmlMapper();
             this.deck = mapper.readValue(file, Deck.class);
@@ -159,15 +159,15 @@ public class Flashcards extends JFrame implements ActionListener {
         }
     }
     
-    public void open() {
+    public void openFile() {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             this.file = fileChooser.getSelectedFile();
-	    open(file);
-            saveDeck.setEnabled(true);
+	    openFile(file);
+            saveFile.setEnabled(true);
 	}
     }
     
-    public void save() {
+    public void saveFile() {
         try {
             XmlMapper mapper = new XmlMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -177,27 +177,27 @@ public class Flashcards extends JFrame implements ActionListener {
         }
     }
     
-    public void saveAs() {
+    public void saveFileAs() {
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             this.file = fileChooser.getSelectedFile();
-	    save();
-            saveDeck.setEnabled(true);
+	    saveFile();
+            saveFile.setEnabled(true);
 	}
     }
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == newDeck) {
-            newDeck();
+        if (e.getSource() == newFile) {
+            newFile();
         }
-        else if (e.getSource() == openDeck) {
-            open();
+        else if (e.getSource() == openFile) {
+            openFile();
         }
-        else if (e.getSource() == saveDeck) {
-            save();
+        else if (e.getSource() == saveFile) {
+            saveFile();
         }
-        else if (e.getSource() == saveDeckAs) {
-            saveAs();
+        else if (e.getSource() == saveFileAs) {
+            saveFileAs();
         }
         else if (e.getSource() == exit) {
             dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
