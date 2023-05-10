@@ -24,14 +24,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 
 /**
  *
  * @author andrewtaylor
  */
-public class Flashcards extends JFrame implements ActionListener, MenuListener {
+public class Flashcards extends JFrame implements ActionListener {
     
     private JMenuBar menuBar;
     private JMenu fileMenu;
@@ -54,6 +52,7 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         newDeck = new JMenuItem("New");
         openDeck = new JMenuItem("Open");
         saveDeck = new JMenuItem("Save");
+        saveDeck.setEnabled(false);
         saveDeckAs = new JMenuItem("Save as");
         exit = new JMenuItem("Exit");
         fileMenu.add(newDeck);
@@ -91,7 +90,6 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
                contentPane.requestFocusInWindow();
            } 
         });
-        fileMenu.addMenuListener(this);
         InputMap im = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "right");
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "left");
@@ -147,6 +145,7 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         this.file = null;
         centerPanel.setDeck(deck);
         centerPanel.update();
+        saveDeck.setEnabled(false);
     }
     
     public void open(File file) {
@@ -164,6 +163,7 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             this.file = fileChooser.getSelectedFile();
 	    open(file);
+            saveDeck.setEnabled(true);
 	}
     }
     
@@ -181,6 +181,7 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             this.file = fileChooser.getSelectedFile();
 	    save();
+            saveDeck.setEnabled(true);
 	}
     }
     
@@ -203,22 +204,7 @@ public class Flashcards extends JFrame implements ActionListener, MenuListener {
             System.exit(0);
         }
     }
-    
-    @Override
-    public void menuSelected(MenuEvent e) {
-        if (file == null) {
-            saveDeck.setEnabled(false);
-        } else {
-            saveDeck.setEnabled(true);
-        }
-    }
-
-    @Override
-    public void menuDeselected(MenuEvent e) {}
-
-    @Override
-    public void menuCanceled(MenuEvent e) {}    
-            
+                
     public static void main(String[] args) {
         Flashcards flashcards = new Flashcards();
         flashcards.createAndShowGui();
